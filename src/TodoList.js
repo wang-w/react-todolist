@@ -2,12 +2,12 @@ import React, { Component } from 'react';
 import 'antd/dist/antd.css';
 import { Input, Button, List } from 'antd';
 import store from './store'
+import { getInputChangeAction, getAddItemAction, getDeleteItemAction } from './store/actionCreators';
 
 class TodoList extends Component {
     constructor(props) {
         super(props)
         this.state = store.getState()
-        console.log(store.getState())
         this.bindInputChange = this.bindInputChange.bind(this)
         this.handleStoreChange = this.handleStoreChange.bind(this)
         this.handleSubmit = this.handleSubmit.bind(this)
@@ -23,17 +23,14 @@ class TodoList extends Component {
                     style={{marginTop: '10px', width: '300px'}}
                     bordered
                     dataSource={this.state.list}
-                    renderItem={item => (<List.Item>{item}</List.Item>)}
+                    renderItem={(item, index) => (<List.Item onClick={this.handleDeleteItem.bind(this, index)}>{item}</List.Item>)}
                     />
             </div>
         )
     }
 
     bindInputChange(e) {
-        const action = {
-            type: 'input_change',
-            value: e.target.value
-        }
+        const action = getInputChangeAction(e.target.value)
         store.dispatch(action)
     }
 
@@ -42,9 +39,11 @@ class TodoList extends Component {
     }
 
     handleSubmit() {
-        const action = {
-            type: 'add_todo_item'
-        }
+        const action = getAddItemAction()
+        store.dispatch(action)
+    }
+    handleDeleteItem(index) {
+        const action = getDeleteItemAction(index)
         store.dispatch(action)
     }
 }
